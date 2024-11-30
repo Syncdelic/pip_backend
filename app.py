@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from backend import create_invoice, save_invoice_to_supabase, list_all_invoices
@@ -47,5 +48,7 @@ def get_tasks_by_user_route(id):
         return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Use the environment variable PORT, defaulting to 5000 if not set
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
 
