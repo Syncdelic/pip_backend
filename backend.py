@@ -59,3 +59,16 @@ def list_all_invoices():
         raise Exception(f"Error listing invoices from Supabase: {response.error}")
     return response.data
 
+def fetch_tasks_by_user(user_id):
+    """
+    Fetch tasks from the Supabase 'tasks' table where created_by matches the user_id.
+    
+    :param user_id: The ID of the user.
+    :return: A list of tasks.
+    :raises Exception: If an error occurs during the query.
+    """
+    response = supabase.table("tasks").select("*").eq("created_by", user_id).execute()
+    if hasattr(response, 'error') and response.error:
+        raise Exception(f"Error fetching tasks: {response.error}")
+    return response.data
+
