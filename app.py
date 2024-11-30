@@ -47,6 +47,20 @@ def get_tasks_by_user_route(id):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+@app.route('/invoices/task/<int:task_id>', methods=['GET'])
+def list_invoices_by_task_id_endpoint(task_id):
+    """
+    Route to fetch all invoices associated with a specific task_id.
+
+    :param task_id: The ID of the task.
+    :return: JSON response containing the list of invoices.
+    """
+    try:
+        invoices = list_invoices_by_task_id(task_id)
+        return jsonify({"success": True, "invoices": invoices}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
 if __name__ == "__main__":
     # Use the environment variable PORT, defaulting to 5000 if not set
     port = int(os.environ.get("PORT", 5000))
