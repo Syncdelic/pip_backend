@@ -10,12 +10,18 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 LNBITS_API_URL = os.getenv("LNBITS_API_URL")
 LNBITS_API_KEY = os.getenv("LNBITS_API_KEY")
+COINOS_API_URL = "https://coinos.io/api/invoice"  # Coinos API endpoint
+COINOS_API_TOKEN = os.getenv("COINOS_API_TOKEN")  # API token for Coinos
 
 # Create Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# LNbits headers
+# Headers for LNbits and Coinos APIs
 lnbits_headers = {"X-Api-Key": LNBITS_API_KEY, "Content-type": "application/json"}
+coinos_headers = {
+    "Content-type": "application/json",
+    "Authorization": f"Bearer {COINOS_API_TOKEN}",
+}
 
 def create_invoice(amount, memo):
     """
@@ -39,11 +45,33 @@ def create_invoice(amount, memo):
         # Log and raise an exception if the request fails
         raise Exception(f"Error creating invoice: {response.status_code}, {response.json()}")
 
+def create_coinos_invoice(amount, invoice_type="lightning"):
+    """
+    Create an invoice using the Coinos API.
+    
+    :param amount: The amount in satoshis.
+    :param invoice_type: The type of invoice ("lightning" or other supported types).
+    :return: Dictionary containing the invoice details.
+    """
+    payload = {
+        "invoice": {
+            "amount": amount,
+            "type": invoice_type
+        }
+    }
+    response = requests.post(COINOS_API_URL, headers=coinos_headers, json=payload)
+    
+    # Check for successful response
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"Error creating Coinos invoice: {response.status_code}, {response.json()}")
+
 # Supabase Functionality
 def save_invoice_to_supabase(invoice, amount, memo):
     data = {
-        "bolt11": invoice["payment_request"],
-        "payment_hash": invoice["payment_hash"],
+        "bolt11": invoice["hash"],
+        "payment_hash": invoice["hash"],
         "amount": amount,
         "memo": memo,
         "status": "pending",
@@ -84,4 +112,3 @@ def list_invoices_by_task_id(task_id):
     if hasattr(response, 'error') and response.error:
         raise Exception(f"Error fetching invoices by task_id: {response.error}")
     return response.data
-

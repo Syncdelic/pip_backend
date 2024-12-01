@@ -9,15 +9,19 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 @app.route('/invoice', methods=['POST'])
 def create_invoice_endpoint():
     try:
+        print("beginning of function====================")
         data = request.get_json()
         amount = data.get("amount")
         memo = data.get("memo")
 
         # Create LNbits invoice
-        invoice = create_invoice(amount, memo)
-        
+        invoice = create_coinos_invoice(amount)
+ 
         # Save invoice to Supabase
+        print("before create supabase")
+        print(invoice)
         save_invoice_to_supabase(invoice, amount, memo)
+        print("after create supabase")
         
         return jsonify({"success": True, "invoice": invoice}), 201
     except Exception as e:
