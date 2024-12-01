@@ -63,7 +63,17 @@ def create_coinos_invoice(amount, invoice_type="lightning"):
     
     # Check for successful response
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+
+        # Legacy fields are not directly provided by Coinos API; simulate or infer them
+        payment_hash = data.get("hash")  # Example: Use the 'id' as the payment hash
+        payment_request = data.get("hash")  # Example field from Coinos response
+
+        # Add legacy fields to the response
+        data["payment_hash"] = payment_hash
+        data["payment_request"] = payment_request
+
+        return data
     else:
         raise Exception(f"Error creating Coinos invoice: {response.status_code}, {response.json()}")
 
