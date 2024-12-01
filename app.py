@@ -15,7 +15,7 @@ def create_invoice_endpoint():
         memo = data.get("memo")
 
         # Create LNbits invoice
-        invoice = create_coinos_invoice(amount, webhook_url=https://pip-blond.vercel.app/api/webhook)
+        invoice = create_coinos_invoice(amount, webhook_url="https://pip-blond.vercel.app/api/webhook")
  
         # Save invoice to Supabase
         print("before create supabase")
