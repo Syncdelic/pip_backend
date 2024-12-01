@@ -45,7 +45,7 @@ def create_invoice(amount, memo):
         # Log and raise an exception if the request fails
         raise Exception(f"Error creating invoice: {response.status_code}, {response.json()}")
 
-def create_coinos_invoice(amount, invoice_type="lightning"):
+def create_coinos_invoice(amount, invoice_type="lightning", webhook_url=None):
     """
     Create an invoice using the Coinos API.
     
@@ -59,6 +59,11 @@ def create_coinos_invoice(amount, invoice_type="lightning"):
             "type": invoice_type
         }
     }
+
+    # Include webhook URL if provided
+    if webhook_url:
+        payload["invoice"]["webhook"] = webhook_url
+
     response = requests.post(COINOS_API_URL, headers=coinos_headers, json=payload)
     
     # Check for successful response
